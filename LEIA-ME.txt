@@ -1,0 +1,52 @@
+# ⚡ EQUIPE TROVÃO — CONFIRMAÇÃO DE VISITAS (CLOUD)
+
+Esta versão já está preparada para:
+- login único por e-mail e senha;
+- Firestore na nuvem;
+- sincronização em tempo real;
+- acesso pelo celular e computador;
+- cadastro, edição, exclusão e alteração de status;
+- WhatsApp;
+- dias Hoje / Amanhã / +2 dias;
+- equipe fixa de corretores.
+
+## 1. Criar o Firebase
+1. Acesse o Firebase Console.
+2. Crie um projeto.
+3. Adicione um aplicativo Web.
+4. Copie o objeto `firebaseConfig`.
+5. Abra `index.html` e substitua os valores de `firebaseConfig`.
+
+NÃO coloque senha de Google ou chave de service account no site.
+
+## 2. Ativar login
+Firebase Console → Authentication → Sign-in method → Email/Password → Ativar.
+
+Crie UM único usuário para a equipe.
+
+## 3. Criar Firestore
+Firebase Console → Firestore Database → Create database.
+
+Depois, nas Rules, cole o conteúdo de `firestore.rules`.
+
+## 4. Publicar
+Instale o Firebase CLI no computador e, dentro desta pasta:
+
+firebase login
+firebase init hosting
+firebase deploy
+
+Ou use o Firebase Hosting pelo fluxo de publicação disponível no console.
+
+## IMPORTANTE
+Como o perfil é único, todas as pessoas que tiverem o mesmo e-mail/senha terão acesso e poderão alterar as visitas. Não compartilhe a senha fora da equipe.
+
+## Equipe cadastrada
+Alliny
+Ana Flávia
+Islanny
+Jonas
+Karina
+Mateus Silva
+
+Líderes/SDR/Anjos podem ser adicionados depois, se desejado.

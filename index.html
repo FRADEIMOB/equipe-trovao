@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0b1220">
+<title>⚡ Equipe Trovão — Visitas</title>
+<link rel="manifest" href="manifest.json">
+<style>
+:root{--bg:#07101f;--card:#0e1a2d;--card2:#13233b;--text:#f7f9fc;--muted:#9fb0c7;--line:#223552;--accent:#f5b400;--green:#28c76f;--red:#ff5d6c;--blue:#4da3ff}
+*{box-sizing:border-box}body{margin:0;background:linear-gradient(145deg,#050b15,#0b1628);color:var(--text);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+button,input,select{font:inherit}button{cursor:pointer}.wrap{max-width:1100px;margin:auto;padding:18px}
+header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px}.brand{display:flex;align-items:center;gap:10px}.bolt{font-size:32px}.brand h1{font-size:20px;margin:0}.brand small{display:block;color:var(--muted);margin-top:2px}
+.badge{font-size:12px;color:#b9c8da;background:#12233b;border:1px solid var(--line);padding:7px 10px;border-radius:999px}
+.login,.panel{background:rgba(14,26,45,.96);border:1px solid var(--line);border-radius:18px;box-shadow:0 18px 50px #0005}
+.login{max-width:420px;margin:12vh auto;padding:28px}.login h2{margin-top:0}.field{margin:12px 0}.field label{display:block;color:var(--muted);font-size:13px;margin-bottom:6px}
+input,select{width:100%;background:#091526;border:1px solid #29405f;color:var(--text);padding:12px;border-radius:11px;outline:none}input:focus,select:focus{border-color:var(--accent)}
+.btn{border:0;border-radius:11px;padding:11px 14px;font-weight:700}.primary{background:var(--accent);color:#111}.ghost{background:#152640;color:#fff;border:1px solid var(--line)}.danger{background:#351822;color:#ff9aa5;border:1px solid #5d2631}
+.actions{display:flex;gap:8px;flex-wrap:wrap}.actions .btn{flex:1}
+.error{color:#ff9aa5;background:#321722;border:1px solid #5d2631;padding:10px;border-radius:10px;font-size:13px;margin-top:10px;display:none}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}.stat{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px}.stat b{font-size:26px}.stat span{display:block;color:var(--muted);font-size:12px}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}.toolbar>*{flex:1;min-width:150px}
+.tabs{display:flex;gap:8px;overflow:auto;margin-bottom:14px}.tab{white-space:nowrap}.tab.active{background:var(--accent);color:#111}
+.panel{padding:16px}.panel h2{font-size:16px;margin:0 0 12px}
+.visit{background:#0b1729;border:1px solid var(--line);border-radius:14px;padding:13px;margin:9px 0;display:grid;grid-template-columns:1fr auto;gap:10px}.visit .top{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.time{font-size:22px;font-weight:800}.client{font-weight:800}.meta{color:var(--muted);font-size:13px;line-height:1.55}.status{padding:5px 9px;border-radius:999px;font-size:11px;font-weight:800}.s-confirmada{background:#123b29;color:#68ef9e}.s-pendente{background:#3c3211;color:#ffd766}.s-reagendada{background:#122d45;color:#74bdff}.s-cancelada{background:#3d1820;color:#ff8e9a}.s-realizada{background:#29233e;color:#c4a7ff}
+.visit-actions{display:flex;gap:6px;align-items:center;justify-content:flex-end;flex-wrap:wrap}.visit-actions button{padding:8px 10px;border-radius:9px;border:1px solid var(--line);background:#14243b;color:#fff}
+.empty{text-align:center;color:var(--muted);padding:30px}.hidden{display:none!important}.sync{font-size:12px;color:var(--muted);margin:5px 0 12px}
+.modal{position:fixed;inset:0;background:#0009;display:flex;align-items:center;justify-content:center;padding:15px;z-index:20}.modalbox{width:min(560px,100%);background:#0d192b;border:1px solid var(--line);border-radius:18px;padding:18px;max-height:90vh;overflow:auto}.modalhead{display:flex;justify-content:space-between;align-items:center}.modalhead button{background:none;border:0;color:#fff;font-size:24px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.full{grid-column:1/-1}
+footer{text-align:center;color:#687c98;font-size:11px;padding:18px}
+@media(max-width:700px){.stats{grid-template-columns:repeat(2,1fr)}.visit{grid-template-columns:1fr}.visit-actions{justify-content:flex-start}.grid{grid-template-columns:1fr}.full{grid-column:auto}}
+</style>
+</head>
+<body>
+<div id="loginView" class="wrap">
+  <div class="login">
+    <div class="brand"><div class="bolt">⚡</div><div><h1>EQUIPE TROVÃO</h1><small>Confirmação de visitas</small></div></div>
+    <h2>Acesso</h2>
+    <div class="field"><label>E-mail</label><input id="email" type="email" autocomplete="username" placeholder="E-mail do acesso"></div>
+    <div class="field"><label>Senha</label><input id="password" type="password" autocomplete="current-password" placeholder="Senha"></div>
+    <button id="loginBtn" class="btn primary" style="width:100%">ENTRAR</button>
+    <div id="loginError" class="error"></div>
+  </div>
+</div>
+
+<div id="app" class="wrap hidden">
+<header>
+  <div class="brand"><div class="bolt">⚡</div><div><h1>EQUIPE TROVÃO</h1><small>Central de confirmação de visitas</small></div></div>
+  <div class="actions" style="flex:0 0 auto"><span id="userBadge" class="badge"></span><button id="logoutBtn" class="btn ghost">Sair</button></div>
+</header>
+<div class="sync" id="sync">Conectando à nuvem…</div>
+<div class="stats">
+  <div class="stat"><b id="total">0</b><span>Visitas</span></div>
+  <div class="stat"><b id="confirmed">0</b><span>Confirmadas</span></div>
+  <div class="stat"><b id="pending">0</b><span>Pendentes</span></div>
+  <div class="stat"><b id="done">0</b><span>Realizadas</span></div>
+</div>
+<div class="tabs" id="dayTabs">
+  <button class="btn tab active" data-day="today">Hoje</button>
+  <button class="btn tab" data-day="tomorrow">Amanhã</button>
+  <button class="btn tab" data-day="day2">+2 dias</button>
+</div>
+<div class="toolbar">
+  <input id="search" placeholder="🔎 Buscar cliente, corretor ou imóvel">
+  <select id="filter"><option value="">Todos os status</option><option>Confirmada</option><option>Pendente</option><option>Reagendada</option><option>Cancelada</option><option>Realizada</option></select>
+  <button id="addBtn" class="btn primary">+ NOVA VISITA</button>
+</div>
+<div class="panel"><h2 id="listTitle">Visitas</h2><div id="list"></div></div>
+<footer>⚡ Equipe Trovão • Dados sincronizados na nuvem</footer>
+</div>
+
+<div id="modal" class="modal hidden">
+<div class="modalbox">
+<div class="modalhead"><h2 id="modalTitle">Nova visita</h2><button id="closeModal">×</button></div>
+<form id="visitForm">
+<input type="hidden" id="visitId">
+<div class="grid">
+<div class="field"><label>Data</label><input id="date" type="date" required></div>
+<div class="field"><label>Horário</label><input id="time" type="time" required></div>
+<div class="field"><label>Cliente</label><input id="client" required placeholder="Nome do cliente"></div>
+<div class="field"><label>Telefone</label><input id="phone" placeholder="(83) 99999-9999"></div>
+<div class="field full"><label>Imóvel / empreendimento</label><input id="property" required placeholder="Ex.: Reserva dos Colibris"></div>
+<div class="field"><label>Corretor</label><select id="broker" required></select></div>
+<div class="field"><label>Status</label><select id="status"><option>Pendente</option><option>Confirmada</option><option>Reagendada</option><option>Cancelada</option><option>Realizada</option></select></div>
+<div class="field full"><label>Observação</label><input id="notes" placeholder="Observação opcional"></div>
+</div>
+<div class="actions" style="margin-top:10px"><button type="submit" class="btn primary">SALVAR NA NUVEM</button><button type="button" id="cancelModal" class="btn ghost">Cancelar</button></div>
+<div id="formError" class="error"></div>
+</form>
+</div></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
+import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, query, orderBy, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
+
+/* =========================================================
+   COLE A CONFIGURAÇÃO DO SEU APP FIREBASE AQUI.
+   Firebase Console > Configurações do projeto > Seus apps > Web
+   ========================================================= */
+const firebaseConfig = {
+  apiKey: "AIzaSyDKiS2qu2lmspOAkAlxQ16WzMggNYgL1-I",
+  authDomain: "equipe-trovao.firebaseapp.com",
+  projectId: "equipe-trovao",
+  storageBucket: "equipe-trovao.firebasestorage.app",
+  messagingSenderId: "26311375630",
+  appId: "1:26311375630:web:b7fa95614a6827fa42355f"
+};
+
+const BROKERS=["Alliny","Ana Flávia","Islanny","Jonas","Karina","Mateus Silva"];
+let app,auth,db,unsubscribe=null, visits=[], activeDay="today";
+
+const $=id=>document.getElementById(id);
+const pad=n=>String(n).padStart(2,"0");
+const dateKey=d=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+const dayOffset=key=>key==="today"?0:key==="tomorrow"?1:2;
+const selectedDate=()=>{const d=new Date();d.setDate(d.getDate()+dayOffset(activeDay));return dateKey(d)};
+const fmtDate=s=>new Intl.DateTimeFormat("pt-BR",{weekday:"long",day:"2-digit",month:"2-digit"}).format(new Date(s+"T12:00:00"));
+const esc=s=>String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));
+const wa=p=>{let n=String(p||"").replace(/\D/g,"");if(n.length===11)n="55"+n;return "https://wa.me/"+n};
+
+function show(el,yes=true){el.classList.toggle("hidden",!yes)}
+function openModal(v=null){
+  $("modalTitle").textContent=v?"Editar visita":"Nova visita";
+  $("visitId").value=v?.id||"";
+  $("date").value=v?.date||selectedDate();
+  $("time").value=v?.time||"09:00";
+  $("client").value=v?.client||"";
+  $("phone").value=v?.phone||"";
+  $("property").value=v?.property||"";
+  $("broker").value=v?.broker||BROKERS[0];
+  $("status").value=v?.status||"Pendente";
+  $("notes").value=v?.notes||"";
+  $("formError").style.display="none"; show($("modal"));
+}
+function closeModal(){show($("modal"),false)}
+function setLoginError(msg){$("loginError").textContent=msg;$("loginError").style.display=msg?"block":"none"}
+function setFormError(msg){$("formError").textContent=msg;$("formError").style.display=msg?"block":"none"}
+
+BROKERS.forEach(b=>{const o=document.createElement("option");o.value=b;o.textContent=b;$("broker").appendChild(o)});
+
+async function init(){
+  try{
+    if(firebaseConfig.apiKey==="COLE_AQUI") throw new Error("Firebase ainda não foi configurado. Abra este projeto e coloque a configuração do Firebase no index.html.");
+    app=initializeApp(firebaseConfig);auth=getAuth(app);db=getFirestore(app);
+    onAuthStateChanged(auth,user=>{
+      if(user){show($("loginView"),false);show($("app"));$("userBadge").textContent=user.email||"Acesso";listen();}
+      else {show($("app"),false);show($("loginView"));if(unsubscribe){unsubscribe();unsubscribe=null;}}
+    });
+  }catch(e){setLoginError(e.message)}
+}
+$("loginBtn").onclick=async()=>{setLoginError("");try{await signInWithEmailAndPassword(auth,$("email").value.trim(),$("password").value)}catch(e){setLoginError("E-mail ou senha inválidos.")}};
+$("logoutBtn").onclick=()=>signOut(auth);
+$("addBtn").onclick=()=>openModal();
+$("closeModal").onclick=closeModal;$("cancelModal").onclick=closeModal;
+$("modal").onclick=e=>{if(e.target===$("modal"))closeModal()};
+$("dayTabs").onclick=e=>{if(!e.target.dataset.day)return;activeDay=e.target.dataset.day;document.querySelectorAll(".tab").forEach(x=>x.classList.toggle("active",x===e.target));render()};
+$("search").oninput=render;$("filter").onchange=render;
+
+async function saveVisit(data,id){
+  if(id) await updateDoc(doc(db,"visits",id),{...data,updatedAt:serverTimestamp()});
+  else await addDoc(collection(db,"visits"),{...data,createdAt:serverTimestamp(),updatedAt:serverTimestamp()});
+}
+$("visitForm").onsubmit=async e=>{
+ e.preventDefault();setFormError("");
+ const data={date:$("date").value,time:$("time").value,client:$("client").value.trim(),phone:$("phone").value.trim(),property:$("property").value.trim(),broker:$("broker").value,status:$("status").value,notes:$("notes").value.trim()};
+ try{await saveVisit(data,$("visitId").value||null);closeModal()}catch(err){setFormError("Não foi possível salvar. Verifique sua conexão e as regras do Firestore.")}
+};
+
+function listen(){
+ const q=query(collection(db,"visits"),orderBy("date"));
+ unsubscribe=onSnapshot(q,snap=>{$("sync").textContent="🟢 Sincronizado com a nuvem";visits=snap.docs.map(d=>({id:d.id,...d.data()}));render()},err=>{$("sync").textContent="🔴 Erro de sincronização";console.error(err)});
+}
+async function changeStatus(id,status){try{await updateDoc(doc(db,"visits",id),{status,updatedAt:serverTimestamp()})}catch(e){alert("Erro ao atualizar status.")}}
+async function removeVisit(id){if(confirm("Excluir esta visita?")){try{await deleteDoc(doc(db,"visits",id))}catch(e){alert("Erro ao excluir.")}}}
+
+function render(){
+ const d=selectedDate(), term=$("search").value.toLowerCase(), fs=$("filter").value;
+ const filtered=visits.filter(v=>v.date===d && (!fs||v.status===fs) && (!term||[v.client,v.broker,v.property,v.phone].join(" ").toLowerCase().includes(term))).sort((a,b)=>(a.time||"").localeCompare(b.time||""));
+ $("listTitle").textContent=`${fmtDate(d)} — ${filtered.length} visita(s)`;
+ $("total").textContent=filtered.length;
+ $("confirmed").textContent=filtered.filter(v=>v.status==="Confirmada").length;
+ $("pending").textContent=filtered.filter(v=>v.status==="Pendente").length;
+ $("done").textContent=filtered.filter(v=>v.status==="Realizada").length;
+ $("list").innerHTML=filtered.length?filtered.map(v=>`
+ <div class="visit">
+  <div>
+   <div class="top"><span class="time">${esc(v.time)}</span><span class="client">${esc(v.client)}</span><span class="status s-${(v.status||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"")}">${esc(v.status)}</span></div>
+   <div class="meta">👤 ${esc(v.broker)} · 🏠 ${esc(v.property)}${v.phone?`<br>📱 ${esc(v.phone)}`:""}${v.notes?`<br>📝 ${esc(v.notes)}`:""}</div>
+  </div>
+  <div class="visit-actions">
+   ${v.phone?`<button onclick="window.open('${wa(v.phone)}','_blank')">WhatsApp</button>`:""}
+   <button onclick='openModal(${JSON.stringify(v).replace(/'/g,"&#39;")})'>Editar</button>
+   <button onclick="changeStatus('${v.id}','Realizada')">✓ Realizada</button>
+   <button class="danger" onclick="removeVisit('${v.id}')">Excluir</button>
+  </div>
+ </div>`).join(""):`<div class="empty">Nenhuma visita cadastrada para este dia.</div>`;
+}
+window.openModal=openModal;window.changeStatus=changeStatus;window.removeVisit=removeVisit;
+init();
+</script>
+</body>
+</html>
