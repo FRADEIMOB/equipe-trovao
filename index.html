@@ -80,7 +80,7 @@ footer{text-align:center;color:#687c98;font-size:11px;padding:18px}
 <div class="field"><label>Cliente</label><input id="client" required placeholder="Nome do cliente"></div>
 <div class="field"><label>Telefone</label><input id="phone" placeholder="(83) 99999-9999"></div>
 <div class="field full"><label>Imóvel / empreendimento</label><input id="property" required placeholder="Ex.: Reserva dos Colibris"></div>
-<div class="field"><label>Corretor</label><select id="broker" required></select></div>
+<div class="field"><label>Corretor</label><input id="broker" list="brokerList" required autocomplete="off" placeholder="Digite ou escolha o corretor"><datalist id="brokerList"></datalist></div>
 <div class="field"><label>Status</label><select id="status"><option>Pendente</option><option>Confirmada</option><option>Reagendada</option><option>Cancelada</option><option>Realizada</option></select></div>
 <div class="field full"><label>Observação</label><input id="notes" placeholder="Observação opcional"></div>
 </div>
@@ -128,7 +128,7 @@ function openModal(v=null){
   $("client").value=v?.client||"";
   $("phone").value=v?.phone||"";
   $("property").value=v?.property||"";
-  $("broker").value=v?.broker||BROKERS[0];
+  $("broker").value=v?.broker||"";
   $("status").value=v?.status||"Pendente";
   $("notes").value=v?.notes||"";
   $("formError").style.display="none"; show($("modal"));
@@ -137,7 +137,8 @@ function closeModal(){show($("modal"),false)}
 function setLoginError(msg){$("loginError").textContent=msg;$("loginError").style.display=msg?"block":"none"}
 function setFormError(msg){$("formError").textContent=msg;$("formError").style.display=msg?"block":"none"}
 
-BROKERS.forEach(b=>{const o=document.createElement("option");o.value=b;o.textContent=b;$("broker").appendChild(o)});
+function fillBrokers(){const names=[...new Set([...BROKERS,...visits.map(v=>(v.broker||"").trim()).filter(Boolean)])].sort((a,b)=>a.localeCompare(b,"pt-BR"));$("brokerList").innerHTML=names.map(n=>`<option value="${esc(n)}"></option>`).join("")}
+fillBrokers();
 
 async function init(){
   try{
@@ -163,13 +164,13 @@ async function saveVisit(data,id){
 }
 $("visitForm").onsubmit=async e=>{
  e.preventDefault();setFormError("");
- const data={date:$("date").value,time:$("time").value,client:$("client").value.trim(),phone:$("phone").value.trim(),property:$("property").value.trim(),broker:$("broker").value,status:$("status").value,notes:$("notes").value.trim()};
+ const data={date:$("date").value,time:$("time").value,client:$("client").value.trim(),phone:$("phone").value.trim(),property:$("property").value.trim(),broker:$("broker").value.trim(),status:$("status").value,notes:$("notes").value.trim()};
  try{await saveVisit(data,$("visitId").value||null);closeModal()}catch(err){setFormError("Não foi possível salvar. Verifique sua conexão e as regras do Firestore.")}
 };
 
 function listen(){
  const q=query(collection(db,"visits"),orderBy("date"));
- unsubscribe=onSnapshot(q,snap=>{$("sync").textContent="🟢 Sincronizado com a nuvem";visits=snap.docs.map(d=>({id:d.id,...d.data()}));render()},err=>{$("sync").textContent="🔴 Erro de sincronização";console.error(err)});
+ unsubscribe=onSnapshot(q,snap=>{$("sync").textContent="🟢 Sincronizado com a nuvem";visits=snap.docs.map(d=>({id:d.id,...d.data()}));fillBrokers();render()},err=>{$("sync").textContent="🔴 Erro de sincronização";console.error(err)});
 }
 async function changeStatus(id,status){try{await updateDoc(doc(db,"visits",id),{status,updatedAt:serverTimestamp()})}catch(e){alert("Erro ao atualizar status.")}}
 async function removeVisit(id){if(confirm("Excluir esta visita?")){try{await deleteDoc(doc(db,"visits",id))}catch(e){alert("Erro ao excluir.")}}}
