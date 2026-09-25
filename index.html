@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0b1220">
-<title>⚡ Equipe Trovão — Visitas</title>
+<title>Central de Visitas — Frade Imóveis</title>
 <link rel="manifest" href="manifest.json">
 <style>
 :root{--bg:#07101f;--card:#0e1a2d;--card2:#13233b;--text:#f7f9fc;--muted:#9fb0c7;--line:#223552;--accent:#f5b400;--green:#28c76f;--red:#ff5d6c;--blue:#4da3ff}
@@ -27,6 +27,8 @@ input,select{width:100%;background:#091526;border:1px solid #29405f;color:var(--
 .empty{text-align:center;color:var(--muted);padding:30px}.hidden{display:none!important}.sync{font-size:12px;color:var(--muted);margin:5px 0 12px}
 .modal{position:fixed;inset:0;background:#0009;display:flex;align-items:center;justify-content:center;padding:15px;z-index:20}.modalbox{width:min(560px,100%);background:#0d192b;border:1px solid var(--line);border-radius:18px;padding:18px;max-height:90vh;overflow:auto}.modalhead{display:flex;justify-content:space-between;align-items:center}.modalhead button{background:none;border:0;color:#fff;font-size:24px}
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.full{grid-column:1/-1}
+.dayhead{margin:18px 0 4px;font-size:13px;font-weight:800;color:var(--accent);text-transform:capitalize;display:flex;justify-content:space-between}.dayhead:first-child{margin-top:0}.dayhead span{color:var(--muted);font-weight:600;text-transform:none}
+.rank-table{width:100%;border-collapse:collapse}.rank-table th{color:var(--muted);font-size:12px;font-weight:600;text-align:right;padding:8px 6px;border-bottom:1px solid var(--line)}.rank-table th:nth-child(-n+2){text-align:left}.rank-table td{padding:11px 6px;border-bottom:1px solid #182a44;text-align:right;font-variant-numeric:tabular-nums}.rank-table td:nth-child(-n+2){text-align:left}.rank-table tr.me td{background:#12233b}.pos{font-weight:800;width:36px}.rname{font-weight:700}.rteam{display:block;font-size:11px;color:var(--muted);font-weight:500;margin-top:2px}.rtotal{font-size:18px;font-weight:800;color:var(--accent)}.rank-note{color:var(--muted);font-size:12px;margin-top:10px}
 footer{text-align:center;color:#687c98;font-size:11px;padding:18px}
 @media(max-width:700px){.stats{grid-template-columns:repeat(2,1fr)}.visit{grid-template-columns:1fr}.visit-actions{justify-content:flex-start}.grid{grid-template-columns:1fr}.full{grid-column:auto}}
 </style>
@@ -34,7 +36,7 @@ footer{text-align:center;color:#687c98;font-size:11px;padding:18px}
 <body>
 <div id="loginView" class="wrap">
   <div class="login">
-    <div class="brand"><div class="bolt">⚡</div><div><h1>EQUIPE TROVÃO</h1><small>Confirmação de visitas</small></div></div>
+    <div class="brand"><div class="bolt">📅</div><div><h1>CENTRAL DE VISITAS</h1><small>Frade Imóveis • entre com o acesso da sua equipe</small></div></div>
     <h2>Acesso</h2>
     <div class="field"><label>E-mail</label><input id="email" type="email" autocomplete="username" placeholder="E-mail do acesso"></div>
     <div class="field"><label>Senha</label><input id="password" type="password" autocomplete="current-password" placeholder="Senha"></div>
@@ -45,28 +47,38 @@ footer{text-align:center;color:#687c98;font-size:11px;padding:18px}
 
 <div id="app" class="wrap hidden">
 <header>
-  <div class="brand"><div class="bolt">⚡</div><div><h1>EQUIPE TROVÃO</h1><small>Central de confirmação de visitas</small></div></div>
+  <div class="brand"><div class="bolt" id="teamIcon">⚡</div><div><h1 id="teamName">EQUIPE</h1><small>Central de confirmação de visitas</small></div></div>
   <div class="actions" style="flex:0 0 auto"><span id="userBadge" class="badge"></span><button id="logoutBtn" class="btn ghost">Sair</button></div>
 </header>
 <div class="sync" id="sync">Conectando à nuvem…</div>
+<div class="tabs" id="viewTabs">
+  <button class="btn ghost tab active" data-view="visits">📋 Visitas</button>
+  <button class="btn ghost tab" data-view="ranking">🏆 Ranking de corretores</button>
+</div>
+<div id="visitsView">
 <div class="stats">
   <div class="stat"><b id="total">0</b><span>Visitas</span></div>
   <div class="stat"><b id="confirmed">0</b><span>Confirmadas</span></div>
   <div class="stat"><b id="pending">0</b><span>Pendentes</span></div>
   <div class="stat"><b id="done">0</b><span>Realizadas</span></div>
 </div>
-<div class="tabs" id="dayTabs">
-  <button class="btn tab active" data-day="today">Hoje</button>
-  <button class="btn tab" data-day="tomorrow">Amanhã</button>
-  <button class="btn tab" data-day="day2">+2 dias</button>
-</div>
 <div class="toolbar">
   <input id="search" placeholder="🔎 Buscar cliente, corretor ou imóvel">
+  <select id="period"><option value="next">Próximas (de hoje em diante)</option><option value="all">Todas as visitas</option><option value="past">Visitas anteriores</option></select>
   <select id="filter"><option value="">Todos os status</option><option>Confirmada</option><option>Pendente</option><option>Reagendada</option><option>Cancelada</option><option>Realizada</option></select>
   <button id="addBtn" class="btn primary">+ NOVA VISITA</button>
 </div>
 <div class="panel"><h2 id="listTitle">Visitas</h2><div id="list"></div></div>
-<footer>⚡ Equipe Trovão • Dados sincronizados na nuvem</footer>
+</div>
+<div id="rankingView" class="hidden">
+<div class="toolbar">
+  <select id="rankPeriod"><option value="month">Este mês</option><option value="week">Esta semana (seg a dom)</option><option value="next">Próximas (de hoje em diante)</option><option value="all">Todo o período</option></select>
+  <select id="rankTeam"><option value="">Todas as equipes</option><option value="trovao">⚡ Equipe Trovão</option><option value="tenda">🏕️ Equipe Tropa Tenda</option></select>
+</div>
+<div class="panel"><h2 id="rankTitle">🏆 Ranking de corretores</h2><div id="rankList"></div>
+<div class="rank-note">Conta as visitas marcadas pela data da visita (canceladas não entram). Nomes são agrupados sem diferenciar maiúsculas/minúsculas — digite o nome do corretor sempre do mesmo jeito.</div></div>
+</div>
+<footer id="teamFooter">Dados sincronizados na nuvem</footer>
 </div>
 
 <div id="modal" class="modal hidden">
@@ -92,7 +104,7 @@ footer{text-align:center;color:#687c98;font-size:11px;padding:18px}
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
 import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
-import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, query, orderBy, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
+import { getFirestore, collection, addDoc, updateDoc, deleteDoc, setDoc, doc, query, orderBy, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
 
 /* =========================================================
    COLE A CONFIGURAÇÃO DO SEU APP FIREBASE AQUI.
@@ -107,22 +119,35 @@ const firebaseConfig = {
   appId: "1:26311375630:web:b7fa95614a6827fa42355f"
 };
 
-let app,auth,db,unsubscribe=null, visits=[], activeDay="today";
+/* =========================================================
+   EQUIPES — cada login vê somente as visitas da própria equipe.
+   O e-mail da Tropa Tenda precisa ser EXATAMENTE o mesmo
+   criado no Firebase (Authentication > Usuários) e nas regras.
+   ========================================================= */
+const TROPA_TENDA_EMAIL="tropatenda@fradeimoveis.com";
+const TEAMS={
+  trovao:{key:"trovao",name:"EQUIPE TROVÃO",short:"Trovão",icon:"⚡",col:"visits"},
+  tenda:{key:"tenda",name:"EQUIPE TROPA TENDA",short:"Tropa Tenda",icon:"🏕️",col:"visitas_tropa_tenda"}
+};
+const teamFor=email=>String(email||"").toLowerCase()===TROPA_TENDA_EMAIL?TEAMS.tenda:TEAMS.trovao;
+
+const RANK_COL="ranking_visitas"; // resumo sem dados de cliente: equipe, corretor, data, status
+let app,auth,db,unsubscribe=null,unsubRank=null,visits=[],team=TEAMS.trovao;
+let rankDocs=[],visitsLoaded=false,rankLoaded=false,rankError="";
+const pendingRank=new Map();
 
 const $=id=>document.getElementById(id);
 const pad=n=>String(n).padStart(2,"0");
-const dateKey=d=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
-const dayOffset=key=>key==="today"?0:key==="tomorrow"?1:2;
-const selectedDate=()=>{const d=new Date();d.setDate(d.getDate()+dayOffset(activeDay));return dateKey(d)};
-const fmtDate=s=>new Intl.DateTimeFormat("pt-BR",{weekday:"long",day:"2-digit",month:"2-digit"}).format(new Date(s+"T12:00:00"));
+const todayKey=()=>{const d=new Date();return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`};
+const fmtDate=s=>{try{return new Intl.DateTimeFormat("pt-BR",{weekday:"long",day:"2-digit",month:"2-digit",year:"numeric"}).format(new Date(s+"T12:00:00"))}catch(e){return s||"Sem data"}};
 const esc=s=>String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));
-const wa=p=>{let n=String(p||"").replace(/\D/g,"");if(n.length===11)n="55"+n;return "https://wa.me/"+n};
+const wa=p=>{let n=String(p||"").replace(/\D/g,"");if(n.length===10||n.length===11)n="55"+n;return "https://wa.me/"+n};
 
 function show(el,yes=true){el.classList.toggle("hidden",!yes)}
 function openModal(v=null){
   $("modalTitle").textContent=v?"Editar visita":"Nova visita";
   $("visitId").value=v?.id||"";
-  $("date").value=v?.date||selectedDate();
+  $("date").value=v?.date||todayKey();
   $("time").value=v?.time||"09:00";
   $("client").value=v?.client||"";
   $("phone").value=v?.phone||"";
@@ -132,70 +157,164 @@ function openModal(v=null){
   $("notes").value=v?.notes||"";
   $("formError").style.display="none"; show($("modal"));
 }
+function editVisit(id){const v=visits.find(x=>x.id===id);if(v)openModal(v)}
 function closeModal(){show($("modal"),false)}
 function setLoginError(msg){$("loginError").textContent=msg;$("loginError").style.display=msg?"block":"none"}
 function setFormError(msg){$("formError").textContent=msg;$("formError").style.display=msg?"block":"none"}
 
-
+function applyTeam(){
+  $("teamIcon").textContent=team.icon;
+  $("teamName").textContent=team.name;
+  $("teamFooter").textContent=`${team.icon} ${team.name} • Dados sincronizados na nuvem`;
+  document.title=`${team.icon} ${team.name} — Visitas`;
+}
 
 async function init(){
   try{
-    if(firebaseConfig.apiKey==="COLE_AQUI") throw new Error("Firebase ainda não foi configurado. Abra este projeto e coloque a configuração do Firebase no index.html.");
     app=initializeApp(firebaseConfig);auth=getAuth(app);db=getFirestore(app);
     onAuthStateChanged(auth,user=>{
-      if(user){show($("loginView"),false);show($("app"));$("userBadge").textContent=user.email||"Acesso";listen();}
-      else {show($("app"),false);show($("loginView"));if(unsubscribe){unsubscribe();unsubscribe=null;}}
+      if(unsubscribe){unsubscribe();unsubscribe=null;}
+      if(unsubRank){unsubRank();unsubRank=null;}
+      visits=[];rankDocs=[];visitsLoaded=false;rankLoaded=false;rankError="";pendingRank.clear();
+      if(user){team=teamFor(user.email);applyTeam();show($("loginView"),false);show($("app"));$("userBadge").textContent=user.email||"Acesso";render();listen();}
+      else {show($("app"),false);show($("loginView"));document.title="Central de Visitas — Frade Imóveis";}
     });
   }catch(e){setLoginError(e.message)}
 }
 $("loginBtn").onclick=async()=>{setLoginError("");try{await signInWithEmailAndPassword(auth,$("email").value.trim(),$("password").value)}catch(e){setLoginError("E-mail ou senha inválidos.")}};
+$("password").onkeydown=e=>{if(e.key==="Enter")$("loginBtn").click()};
 $("logoutBtn").onclick=()=>signOut(auth);
 $("addBtn").onclick=()=>openModal();
 $("closeModal").onclick=closeModal;$("cancelModal").onclick=closeModal;
 $("modal").onclick=e=>{if(e.target===$("modal"))closeModal()};
-$("dayTabs").onclick=e=>{if(!e.target.dataset.day)return;activeDay=e.target.dataset.day;document.querySelectorAll(".tab").forEach(x=>x.classList.toggle("active",x===e.target));render()};
-$("search").oninput=render;$("filter").onchange=render;
+$("search").oninput=render;$("filter").onchange=render;$("period").onchange=render;
+$("rankPeriod").onchange=renderRanking;$("rankTeam").onchange=renderRanking;
+$("viewTabs").onclick=e=>{const b=e.target.closest("[data-view]");if(!b)return;
+  document.querySelectorAll("#viewTabs .tab").forEach(x=>x.classList.toggle("active",x===b));
+  show($("visitsView"),b.dataset.view==="visits");show($("rankingView"),b.dataset.view==="ranking");renderRanking()};
 
 async function saveVisit(data,id){
-  if(id) await updateDoc(doc(db,"visits",id),{...data,updatedAt:serverTimestamp()});
-  else await addDoc(collection(db,"visits"),{...data,createdAt:serverTimestamp(),updatedAt:serverTimestamp()});
+  if(id) await updateDoc(doc(db,team.col,id),{...data,updatedAt:serverTimestamp()});
+  else await addDoc(collection(db,team.col),{...data,createdAt:serverTimestamp(),updatedAt:serverTimestamp()});
 }
 $("visitForm").onsubmit=async e=>{
  e.preventDefault();setFormError("");
  const data={date:$("date").value,time:$("time").value,client:$("client").value.trim(),phone:$("phone").value.trim(),property:$("property").value.trim(),broker:$("broker").value.trim(),status:$("status").value,notes:$("notes").value.trim()};
- try{await saveVisit(data,$("visitId").value||null);closeModal()}catch(err){setFormError("Não foi possível salvar. Verifique sua conexão e as regras do Firestore.")}
+ try{await saveVisit(data,$("visitId").value||null);closeModal()}catch(err){console.error(err);setFormError("Não foi possível salvar. Verifique sua conexão e as regras do Firestore.")}
 };
 
 function listen(){
- const q=query(collection(db,"visits"),orderBy("date"));
- unsubscribe=onSnapshot(q,snap=>{$("sync").textContent="🟢 Sincronizado com a nuvem";visits=snap.docs.map(d=>({id:d.id,...d.data()}));render()},err=>{$("sync").textContent="🔴 Erro de sincronização";console.error(err)});
+ $("sync").textContent="Conectando à nuvem…";
+ const q=query(collection(db,team.col),orderBy("date"));
+ unsubscribe=onSnapshot(q,snap=>{$("sync").textContent="🟢 Sincronizado com a nuvem";visits=snap.docs.map(d=>({id:d.id,...d.data()}));visitsLoaded=true;render();syncRanking()},err=>{$("sync").textContent="🔴 Erro de sincronização — verifique as regras do Firestore";console.error(err)});
+ unsubRank=onSnapshot(collection(db,RANK_COL),snap=>{rankError="";rankDocs=snap.docs.map(d=>({id:d.id,...d.data()}));rankLoaded=true;renderRanking();syncRanking()},
+   err=>{rankError="Não foi possível carregar o ranking. Confira se as regras novas do Firestore foram publicadas.";renderRanking();console.error(err)});
 }
-async function changeStatus(id,status){try{await updateDoc(doc(db,"visits",id),{status,updatedAt:serverTimestamp()})}catch(e){alert("Erro ao atualizar status.")}}
-async function removeVisit(id){if(confirm("Excluir esta visita?")){try{await deleteDoc(doc(db,"visits",id))}catch(e){alert("Erro ao excluir.")}}}
 
-function render(){
- const d=selectedDate(), term=$("search").value.toLowerCase(), fs=$("filter").value;
- const filtered=visits.filter(v=>v.date===d && (!fs||v.status===fs) && (!term||[v.client,v.broker,v.property,v.phone].join(" ").toLowerCase().includes(term))).sort((a,b)=>(a.time||"").localeCompare(b.time||""));
- $("listTitle").textContent=`${fmtDate(d)} — ${filtered.length} visita(s)`;
- $("total").textContent=filtered.length;
- $("confirmed").textContent=filtered.filter(v=>v.status==="Confirmada").length;
- $("pending").textContent=filtered.filter(v=>v.status==="Pendente").length;
- $("done").textContent=filtered.filter(v=>v.status==="Realizada").length;
- $("list").innerHTML=filtered.length?filtered.map(v=>`
- <div class="visit">
+/* Mantém o resumo do ranking igual às visitas da própria equipe (cria, atualiza e remove) */
+function syncRanking(){
+ if(!visitsLoaded||!rankLoaded)return;
+ const mine=new Map(rankDocs.filter(r=>r.team===team.key).map(r=>[r.id,r]));
+ const wanted=new Set();
+ for(const v of visits){
+   const id=`${team.key}_${v.id}`;wanted.add(id);
+   const data={team:team.key,broker:(v.broker||"").trim(),date:v.date||"",status:v.status||""};
+   const cur=mine.get(id);
+   if(cur&&cur.broker===data.broker&&cur.date===data.date&&cur.status===data.status){pendingRank.delete(id);continue}
+   const sig=JSON.stringify(data);if(pendingRank.get(id)===sig)continue;
+   pendingRank.set(id,sig);
+   setDoc(doc(db,RANK_COL,id),data).catch(e=>{pendingRank.delete(id);console.error(e)});
+ }
+ for(const id of mine.keys()){
+   if(wanted.has(id))continue;
+   if(pendingRank.get(id)==="DEL")continue;
+   pendingRank.set(id,"DEL");
+   deleteDoc(doc(db,RANK_COL,id)).catch(e=>{pendingRank.delete(id);console.error(e)});
+ }
+}
+
+function rankRange(){
+ const p=$("rankPeriod").value,d=new Date(),k=x=>`${x.getFullYear()}-${pad(x.getMonth()+1)}-${pad(x.getDate())}`;
+ if(p==="month"){const a=new Date(d.getFullYear(),d.getMonth(),1),b=new Date(d.getFullYear(),d.getMonth()+1,0);return [k(a),k(b),"deste mês"]}
+ if(p==="week"){const a=new Date(d);a.setDate(d.getDate()-((d.getDay()+6)%7));const b=new Date(a);b.setDate(a.getDate()+6);return [k(a),k(b),"desta semana"]}
+ if(p==="next")return [k(d),"9999-12-31","de hoje em diante"];
+ return ["0000-01-01","9999-12-31","de todo o período"];
+}
+function renderRanking(){
+ if($("rankingView").classList.contains("hidden"))return;
+ if(rankError){$("rankList").innerHTML=`<div class="error" style="display:block">${esc(rankError)}</div>`;return}
+ if(!rankLoaded){$("rankList").innerHTML=`<div class="empty">Carregando ranking…</div>`;return}
+ const [from,to,label]=rankRange(),tf=$("rankTeam").value;
+ const groups=new Map();
+ for(const r of rankDocs){
+   if(!r.broker||r.status==="Cancelada")continue;
+   if(!r.date||r.date<from||r.date>to)continue;
+   if(tf&&r.team!==tf)continue;
+   const key=r.team+"|"+r.broker.trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/\s+/g," ");
+   if(!groups.has(key))groups.set(key,{name:r.broker.trim(),team:r.team,total:0,conf:0,done:0});
+   const g=groups.get(key);g.total++;if(r.status==="Confirmada")g.conf++;if(r.status==="Realizada")g.done++;
+ }
+ const list=[...groups.values()].sort((a,b)=>b.total-a.total||b.done-a.done||b.conf-a.conf||a.name.localeCompare(b.name,"pt-BR"));
+ $("rankTitle").textContent=`🏆 Ranking de corretores ${label}`;
+ if(!list.length){$("rankList").innerHTML=`<div class="empty">Nenhuma visita marcada nesse período.</div>`;return}
+ const medal=i=>i===0?"🥇":i===1?"🥈":i===2?"🥉":`${i+1}º`;
+ let pos=0,prev=null;
+ $("rankList").innerHTML=`<table class="rank-table"><thead><tr><th>#</th><th>Corretor</th><th>Marcadas</th><th>Confirm.</th><th>Realiz.</th></tr></thead><tbody>${
+   list.map((g,i)=>{if(!prev||g.total!==prev.total||g.done!==prev.done||g.conf!==prev.conf)pos=i;prev=g;const t=TEAMS[g.team]||{icon:"",short:g.team};
+     return `<tr class="${g.team===team.key?"me":""}"><td class="pos">${medal(pos)}</td><td><span class="rname">${esc(g.name)}</span><span class="rteam">${t.icon} ${esc(t.short)}</span></td><td class="rtotal">${g.total}</td><td>${g.conf}</td><td>${g.done}</td></tr>`}).join("")
+ }</tbody></table>`;
+}
+async function changeStatus(id,status){try{await updateDoc(doc(db,team.col,id),{status,updatedAt:serverTimestamp()})}catch(e){alert("Erro ao atualizar status.")}}
+async function removeVisit(id){if(confirm("Excluir esta visita?")){try{await deleteDoc(doc(db,team.col,id))}catch(e){alert("Erro ao excluir.")}}}
+
+function card(v){
+ return `<div class="visit">
   <div>
-   <div class="top"><span class="time">${esc(v.time)}</span><span class="client">${esc(v.client)}</span><span class="status s-${(v.status||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"")}">${esc(v.status)}</span></div>
+   <div class="top"><span class="time">${esc(v.time)}</span><span class="client">${esc(v.client)}</span><span class="status s-${(v.status||"").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"")}">${esc(v.status)}</span></div>
    <div class="meta">👤 ${esc(v.broker)} · 🏠 ${esc(v.property)}${v.phone?`<br>📱 ${esc(v.phone)}`:""}${v.notes?`<br>📝 ${esc(v.notes)}`:""}</div>
   </div>
   <div class="visit-actions">
    ${v.phone?`<button onclick="window.open('${wa(v.phone)}','_blank')">WhatsApp</button>`:""}
-   <button onclick='openModal(${JSON.stringify(v).replace(/'/g,"&#39;")})'>Editar</button>
+   <button onclick="editVisit('${v.id}')">Editar</button>
    <button onclick="changeStatus('${v.id}','Realizada')">✓ Realizada</button>
    <button class="danger" onclick="removeVisit('${v.id}')">Excluir</button>
   </div>
- </div>`).join(""):`<div class="empty">Nenhuma visita cadastrada para este dia.</div>`;
+ </div>`;
 }
-window.openModal=openModal;window.changeStatus=changeStatus;window.removeVisit=removeVisit;
+
+function render(){
+ const today=todayKey(), period=$("period").value, term=$("search").value.toLowerCase(), fs=$("filter").value;
+ const filtered=visits.filter(v=>{
+   const d=v.date||"";
+   if(period==="next"&&d<today)return false;
+   if(period==="past"&&d>=today)return false;
+   if(fs&&v.status!==fs)return false;
+   if(term&&![v.client,v.broker,v.property,v.phone].join(" ").toLowerCase().includes(term))return false;
+   return true;
+ }).sort((a,b)=>{
+   const k=(a.date||"").localeCompare(b.date||"")||(a.time||"").localeCompare(b.time||"");
+   return period==="past"?-k:k;
+ });
+ const titles={next:"Próximas visitas",all:"Todas as visitas",past:"Visitas anteriores"};
+ $("listTitle").textContent=`${titles[period]} — ${filtered.length} visita(s)`;
+ $("total").textContent=filtered.length;
+ $("confirmed").textContent=filtered.filter(v=>v.status==="Confirmada").length;
+ $("pending").textContent=filtered.filter(v=>v.status==="Pendente").length;
+ $("done").textContent=filtered.filter(v=>v.status==="Realizada").length;
+ if(!filtered.length){$("list").innerHTML=`<div class="empty">Nenhuma visita encontrada.</div>`;return}
+ let html="",last=null;
+ for(const v of filtered){
+   if(v.date!==last){
+     last=v.date;
+     const n=filtered.filter(x=>x.date===v.date).length;
+     const tag=v.date===today?" • HOJE":"";
+     html+=`<div class="dayhead">${esc(fmtDate(v.date))}${tag}<span>${n} visita(s)</span></div>`;
+   }
+   html+=card(v);
+ }
+ $("list").innerHTML=html;
+}
+window.editVisit=editVisit;window.changeStatus=changeStatus;window.removeVisit=removeVisit;
 init();
 </script>
 </body>
