@@ -80,7 +80,7 @@ footer{text-align:center;color:#687c98;font-size:11px;padding:18px}
 <div class="field"><label>Cliente</label><input id="client" required placeholder="Nome do cliente"></div>
 <div class="field"><label>Telefone</label><input id="phone" placeholder="(83) 99999-9999"></div>
 <div class="field full"><label>Imóvel / empreendimento</label><input id="property" required placeholder="Ex.: Reserva dos Colibris"></div>
-<div class="field"><label>Corretor</label><input id="broker" list="brokerList" required autocomplete="off" placeholder="Digite ou escolha o corretor"><datalist id="brokerList"></datalist></div>
+<div class="field"><label>Corretor</label><input id="broker" required placeholder="Digite o nome do corretor"></div>
 <div class="field"><label>Status</label><select id="status"><option>Pendente</option><option>Confirmada</option><option>Reagendada</option><option>Cancelada</option><option>Realizada</option></select></div>
 <div class="field full"><label>Observação</label><input id="notes" placeholder="Observação opcional"></div>
 </div>
@@ -107,7 +107,6 @@ const firebaseConfig = {
   appId: "1:26311375630:web:b7fa95614a6827fa42355f"
 };
 
-const BROKERS=["Alliny","Ana Flávia","Islanny","Jonas","Karina","Mateus Silva"];
 let app,auth,db,unsubscribe=null, visits=[], activeDay="today";
 
 const $=id=>document.getElementById(id);
@@ -137,8 +136,7 @@ function closeModal(){show($("modal"),false)}
 function setLoginError(msg){$("loginError").textContent=msg;$("loginError").style.display=msg?"block":"none"}
 function setFormError(msg){$("formError").textContent=msg;$("formError").style.display=msg?"block":"none"}
 
-function fillBrokers(){const names=[...new Set([...BROKERS,...visits.map(v=>(v.broker||"").trim()).filter(Boolean)])].sort((a,b)=>a.localeCompare(b,"pt-BR"));$("brokerList").innerHTML=names.map(n=>`<option value="${esc(n)}"></option>`).join("")}
-fillBrokers();
+
 
 async function init(){
   try{
@@ -170,7 +168,7 @@ $("visitForm").onsubmit=async e=>{
 
 function listen(){
  const q=query(collection(db,"visits"),orderBy("date"));
- unsubscribe=onSnapshot(q,snap=>{$("sync").textContent="🟢 Sincronizado com a nuvem";visits=snap.docs.map(d=>({id:d.id,...d.data()}));fillBrokers();render()},err=>{$("sync").textContent="🔴 Erro de sincronização";console.error(err)});
+ unsubscribe=onSnapshot(q,snap=>{$("sync").textContent="🟢 Sincronizado com a nuvem";visits=snap.docs.map(d=>({id:d.id,...d.data()}));render()},err=>{$("sync").textContent="🔴 Erro de sincronização";console.error(err)});
 }
 async function changeStatus(id,status){try{await updateDoc(doc(db,"visits",id),{status,updatedAt:serverTimestamp()})}catch(e){alert("Erro ao atualizar status.")}}
 async function removeVisit(id){if(confirm("Excluir esta visita?")){try{await deleteDoc(doc(db,"visits",id))}catch(e){alert("Erro ao excluir.")}}}
